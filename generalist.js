@@ -94,7 +94,7 @@ function travel(location)
 {
 	let loc = locations[location]
 	let dist = parent.distance(character, loc);
-	if (dist > 750 )
+	if (dist > 100 )
 	{
 		smart_move(
 			character.x+(loc.x-character.x)/2,
@@ -275,7 +275,7 @@ var party = []
 var near_party = []
 function update_party()
 {
-	if ( mssince(last_cm) < 2 * 1000) return;
+	if ( mssince(last_cm) < 6 * 1000) return;
 	party = []
 	near_party = []
 	parent.party_list.forEach(function(member){
@@ -319,6 +319,13 @@ function set_mode(mode)
 }
 
 map_key("G","snippet", "pause();")
+
+function start_alts()
+{
+	start_character("GucciJesus", 2);
+	start_character("Saleth", 5);
+	wait(5).then( e => char_list.forEach(e => send_party_invite(e)));
+}
 
 async function wait(x)
 {

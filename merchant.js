@@ -7,11 +7,49 @@ function merchant_mode()
 
 var upgrade_to = 5;
 
+async function try_compound(set)
+{
+	let grade = item_grade(curr[0]);
+	let scroll = locate_item("cscroll"+grade);
+	if(scroll < 0)
+	{
+		let buy_res = buy("cscroll"+grade).then( e => {
+			return compound(curr[0].index,curr[1].index,curr[2].index,scroll);
+		}).catch( e => {buy_err(e), reject();});
+		scroll = locate_item("cscroll"+grade);
+	}
+
+	
+}
+
+async function compound_all_items()
+{
+	let comps = compound_count();
+	for(let item in comps)
+	{
+		let curr = comps[item];
+		let grade = item_grade(curr[0]);
+		let scroll = locate_item("cscroll"+grade);
+		while(scroll < 0)
+		{
+			let err = false;
+			await buy("cscroll"+grade)
+				.catch( e => {buy_err(e); err=true;});
+			if(err == true) break;
+			scroll = locate_item("cscroll"+grade);
+		}
+		if (character.q.compund) await wait( 1 + (character.q.compound.ms * .001))
+		compound(curr[0].index,curr[1].index,curr[2].index,scroll);
+		log("compounded "+ curr[0]);
+		
+	}
+	return;
+}
+
+
 async function upgrade_all_items()
 {
-	log("started")
-	let a = get_upgrade_count();
-	log("buying scrolls " +a.diff);
+	let a = upgrade_count();
 	
 	while(a.diff > 0)
 	{
@@ -41,12 +79,12 @@ async function upgrade_all_items()
 			item = character.items[y];
 		}
 	}
+	log("done");
 	return true;
 }
 
-function get_upgrade_count()
+function upgrade_count()
 {
-	log("started count");
 	let a = { scrolls : 0,
         	scroll_index : -1,
         	upgrade_count : 0,
@@ -66,10 +104,59 @@ function get_upgrade_count()
 	return a;
 }
 
+function compound_count()
+{
+	var inv = easy_inventory();
+	let comp_map = {}
+	inv.filter( e => e && G.items[e.name].compound)
+		.forEach( e => {
+			let k = e.name+e.level;
+			if(!comp_map[k]) comp_map[k] = []; 
+			comp_map[k].push(e);
+		});
+	var values = Object.keys(comp_map).map( k => comp_map[k]).filter( v=>v.length >=3);
+	return values;
+}
+
+function easy_inventory()
+{
+	return character.items.map( (item, index) => {
+			let out = {};
+			if(!item) return;
+			if(item.name) out.name = item.name;
+			if(item.level) out.level = item.level;
+			if(item.q) out.q = item.q;
+			out.index = index;
+			return out;
+		});
+}
+
 function gather_junk()
 {
 	char_list.filter(m => m !== character.id)
 		.forEach(m => send_cm(m, {"unload" : true}));
+}
+
+function buy_err(err)
+{
+	switch(reason.reason)
+	{
+		case "distance" :
+			//travel
+			return false;
+		case "not_buyable" :
+			log("check");
+			return false;
+		case "cost" :
+			//fetch_gold
+			return false;
+		case "bank" :
+			//deposit
+			return false;
+		default :
+			return false;
+	}
+
 }
 
 async function safe_buy(item, quantity)
