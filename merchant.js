@@ -18,8 +18,6 @@ async function try_compound(set)
 		}).catch( e => {buy_err(e), reject();});
 		scroll = locate_item("cscroll"+grade);
 	}
-
-	
 }
 
 async function compound_all_items()
@@ -40,12 +38,12 @@ async function compound_all_items()
 		}
 		if (character.q.compund) await wait( 1 + (character.q.compound.ms * .001))
 		compound(curr[0].index,curr[1].index,curr[2].index,scroll);
+		//await compound(curr[0].index,curr[1].index,curr[2].index,scroll).catch( e => log(e));
 		log("compounded "+ curr[0]);
 		
 	}
 	return;
 }
-
 
 async function upgrade_all_items()
 {
@@ -118,25 +116,6 @@ function compound_count()
 	return values;
 }
 
-function easy_inventory()
-{
-	return character.items.map( (item, index) => {
-			let out = {};
-			if(!item) return;
-			if(item.name) out.name = item.name;
-			if(item.level) out.level = item.level;
-			if(item.q) out.q = item.q;
-			out.index = index;
-			return out;
-		});
-}
-
-function gather_junk()
-{
-	char_list.filter(m => m !== character.id)
-		.forEach(m => send_cm(m, {"unload" : true}));
-}
-
 function buy_err(err)
 {
 	switch(reason.reason)
@@ -156,7 +135,6 @@ function buy_err(err)
 		default :
 			return false;
 	}
-
 }
 
 async function safe_buy(item, quantity)
@@ -186,18 +164,3 @@ async function safe_buy(item, quantity)
 	}
 }
 
-/*for reference
-async function async_test()
-{
-	log('x');
-	var x = await buy(1).catch( (err) => log(err));
-	log(x);
-}
-async function b(x)
-{
-	return new Promise( resolve => {
-		setTimeout(() => { resolve(x);
-				   }, 500);
-	});
-}
-*/

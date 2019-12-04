@@ -334,3 +334,30 @@ async function wait(x)
 				   }, x*1000);
 	});
 }
+
+function easy_inventory()
+{
+	return character.items.map( (item, index) => {
+			let out = {};
+			if(!item) return;
+			if(item.name) out.name = item.name;
+			if(item.level) out.level = item.level;
+			if(item.q) out.q = item.q;
+			out.index = index;
+			return out;
+		});
+}
+
+function equip_up()
+{
+	for(var x in character.slots)
+	{
+		let check = character.slots[x];
+		if(!check) continue;
+		let match = easy_inventory().filter( e => e && check.name === e.name && (check.level ? check.level : 0) < e.level)
+			.sort((a,b) => b.level - a.level)
+			.find(e=>true);
+		if(match) equip(match.index,x);
+	}
+}
+
