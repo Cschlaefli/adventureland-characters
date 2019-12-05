@@ -31,7 +31,8 @@ var locations = {
 	"crabs" : { 'x' : -1200, 'y' : 0},
 	"bigcrabs" :{ 'x' : -1000, 'y' : 1670},
 	"bees2" : {'x': 640, 'y': 720},
-	"poisio" : {'x': -100, 'y' :900}
+	"poisio" : {'x': -100, 'y' :900},
+	"tortoise": {'x':-1000, 'y':1250}
 }
 
 var char_list = ["Healtuls", "GucciJesus", "Saleth", "GucciGalore"]
@@ -67,7 +68,7 @@ game.on("hit", function(data){
 function follow(ch)
 {
 	if(!ch) return;
-	follow_dist = 50;
+	follow_dist = character.range;
 	var x = ch.x - character.x;
 	var y = ch.y - character.y;
 	if (Math.sqrt((x*x)+ (y*y)) > follow_dist)
@@ -93,6 +94,12 @@ var mp_count = 0;
 function travel(location)
 {
 	let loc = locations[location]
+	if(!loc)
+	{
+		smart_move(hunting);
+		mode = modes.default;
+		return;
+	}
 	let dist = parent.distance(character, loc);
 	if (dist > 100 )
 	{
@@ -323,6 +330,7 @@ map_key("G","snippet", "pause();")
 function start_alts()
 {
 	start_character("GucciJesus", 2);
+	start_character("Healtuls", 3);
 	start_character("Saleth", 5);
 	wait(5).then( e => char_list.forEach(e => send_party_invite(e)));
 }

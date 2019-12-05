@@ -5,7 +5,7 @@ function merchant_mode()
 	//some descison tree here at some point I guess;
 }
 
-var upgrade_to = 5;
+var upgrade_to = 7;
 
 async function try_compound(set)
 {
@@ -23,9 +23,10 @@ async function try_compound(set)
 async function compound_all_items()
 {
 	let comps = compound_count();
-	for(let item in comps)
+	while(comps.length > 0)
 	{
-		let curr = comps[item];
+		comps = compound_count()
+		let curr = comps[0];
 		let grade = item_grade(curr[0]);
 		let scroll = locate_item("cscroll"+grade);
 		while(scroll < 0)
@@ -36,7 +37,8 @@ async function compound_all_items()
 			if(err == true) break;
 			scroll = locate_item("cscroll"+grade);
 		}
-		if (character.q.compund) await wait( 1 + (character.q.compound.ms * .001))
+		await wait(1);
+		if (character.q.compound) await wait( 1 + (character.q.compound.ms * .001))
 		compound(curr[0].index,curr[1].index,curr[2].index,scroll);
 		//await compound(curr[0].index,curr[1].index,curr[2].index,scroll).catch( e => log(e));
 		log("compounded "+ curr[0]);
@@ -51,7 +53,7 @@ async function upgrade_all_items()
 	
 	while(a.diff > 0)
 	{
-		if(! await safe_buy("scroll0", a.diff)) return false;
+		await buy("scroll0", a.diff);
 		a = get_upgrade_count();
 	}
 	//should have the scrolls here
@@ -162,5 +164,11 @@ async function safe_buy(item, quantity)
 				return false;
 		}
 	}
+}
+
+function gather_junk()
+{
+        char_list.filter(m => m !== character.id)
+                .forEach(m => send_cm(m, {"unload" : true}));
 }
 

@@ -1,19 +1,14 @@
 var mode = 1
-var hunting_ground = "crocs"
-var hunting = "armadillo"
+var hunting_ground = "";
+var hunting = "arcticbee";
 
 var party_leader = true
+var targets = []
 
 var invis = false
 game.on("hit", function(data){
-	if(data.target === character.id || data.actor === character.id) return;
-	var target = get_targeted_monster();	
-	if(! target) {
-		change_target(target, true);
-		return;
-	}
-	if(char_list.includes(data.target)){
-		log(data.actor)
+	if(data.target === character.id || char_list.includes(data.actor)) return;
+	if(char_list.includes(data.target) ){
 		change_target(get_monster(data.actor));
 	}
 });
@@ -22,6 +17,7 @@ function attack_mode()
 {
 	modes.default = modes.attack;
 	var target=get_targeted_monster();
+	//targets.filter( e => e).sort( (a,b) => a.hp - b.hp);
 	
 	hp_mp(0.5 , 0.1);
 	

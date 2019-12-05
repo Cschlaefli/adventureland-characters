@@ -9,8 +9,6 @@ var modes = {
 	"support" : 4,
 	"default" : 4
 }
-start_alts();
-
 
 function support_mode()
 {
@@ -33,8 +31,22 @@ function support_mode()
 		.sort( (a,b) => (a.hp/a.hp_max)-(b.hp/a.hp_max))
 		.forEach( c => { heal(c); } );
 	hp_mp(.0,.6);
+	avoid_monsters();
 }
 
+function avoid_monsters()
+{
+	let m = get_nearest_monster();
+	if(m && parent.distance(m, character) < 50)
+	{ 
+		let x = m.x - character.x;
+		let y = m.y -character.y;
+		move( 
+			character.x - x,
+			character.y - y
+		);
+	}
+}
 
 setInterval(function(){
 	update_party()

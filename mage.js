@@ -1,4 +1,4 @@
-var hunting_ground = "crabs"
+var hunting_ground = ""
 var hunting = "crab"
 var mode = 1;
 var modes = {
@@ -26,6 +26,7 @@ var mp_count = 0;
 
 
 var support_also = false
+
 
 function attack_mode()
 {
