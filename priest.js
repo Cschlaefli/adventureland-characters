@@ -22,6 +22,7 @@ function support_mode()
 	//fix this to prioritize people better
 	update_party();
 	let h = true;
+	if(near_party.length <= 1) h = false;
 	near_party.forEach( c => h = h && c.hp < c.max_hp * .8);
 	if( h || near_party.filter( c => c.hp < 1000).length > 0) use("partyheal");
 	
@@ -32,6 +33,19 @@ function support_mode()
 		.forEach( c => { heal(c); } );
 	hp_mp(.0,.6);
 	avoid_monsters();
+	let x = near_party.find( e => e.name === "GucciJesus" && e.target);
+	if(!x)
+	{
+		return;
+	}
+	let mon = get_monster(x.target);
+	if(mon && mon.s && !mon.s.cursed)
+	{
+		if(mon.hp > 1000)
+		{
+			use("curse", mon);
+		}
+	}
 }
 
 function avoid_monsters()

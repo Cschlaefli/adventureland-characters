@@ -39,7 +39,7 @@ var char_list = ["Healtuls", "GucciJesus", "Saleth", "GucciGalore"]
 
 
 var min_pots = 25;
-var buy_to = 1000;
+var buy_to = 10000;
 
 var invis = false
 
@@ -68,10 +68,20 @@ game.on("hit", function(data){
 function follow(ch)
 {
 	if(!ch) return;
+	if(ch.map && ch.map != character.map){
+		smart_move(ch);
+		return;
+	}
+
 	follow_dist = character.range;
+	let dist = parent.distance(character,ch)
 	var x = ch.x - character.x;
 	var y = ch.y - character.y;
-	if (Math.sqrt((x*x)+ (y*y)) > follow_dist)
+	if( dist > 500)
+	{
+		smart_move(ch);
+	}
+	else if (dist > follow_dist)
 	{
 		move(character.x+ (x/2), character.y + (y/2));
 	}
@@ -104,8 +114,7 @@ function travel(location)
 	if (dist > 100 )
 	{
 		smart_move(
-			character.x+(loc.x-character.x)/2,
-			character.y+(loc.y-character.y)/2
+			loc
 		);
 	}
 	else if (dist > 50)
@@ -128,7 +137,7 @@ function buy_check(reason)
 	log(reason);
 	switch(reason){
 		case "distance" :
-			use("town", character);
+			smart_move("potions");
 			break;
 		case "cost" :
 			mode = mode.default;
@@ -158,7 +167,7 @@ function buy_up()
 		value => { last_buy = new Date();},
 		reason => { buy_check(reason.reason)}
 	);
-	if (_hp > 0) buy("hpot0", _hp).then(
+	if (_hp > 0) buy("hpot1", _hp).then(
 		value => { last_buy = new Date();},
 		reason => { buy_check(reason.reason)}
 	);
@@ -172,8 +181,8 @@ function update_pot_count()
 		.filter( i => i && i.name.includes("pot"))
 		.forEach(function(item) {
 		if (!item) return;
-		if (item.name == "hpot0") hp_count = item.q;
-		if (item.name == "mpot0") mp_count = item.q;
+		if (item.name == "hpot1") hp_count += item.q;
+		if (item.name == "mpot0") mp_count += item.q;
 	});
 }
 
@@ -197,12 +206,14 @@ function hp_mp(hp_cap, mp_cap){
 	if(used) last_potion=new Date();
 }
 
+var death_count = 0;
+
 setInterval(function(){
 
-	//use_hp_or_mp();
 	loot();
+	if(character.rip) { death_count += 1; respawn(); return;}
 	
-	if( character.rip || is_moving(character)) return;
+	if(is_moving(character)) return;
 	
 	if (!party_leader){
 		if (mode != modes.buying)
@@ -262,7 +273,7 @@ function on_cm(name,data)
 {
 	if( !char_list.includes(name))
 	{ 
-		log(name + "sent you " + data);
+		safe_log(name + "sent you " + data);
 		return;
 	}
 	data["name"] = name
@@ -270,7 +281,7 @@ function on_cm(name,data)
 		if (data.target) use(data.use, data.target);
 		else use(data.use);
 	}
-	else if (data.location_request) send_cm(name, {'x' : character.x, 'y' : character.y});
+	else if (data.location_request) send_cm(name, {'x' : character.x, 'y' : character.y, 'map': character.map});
 	else if (data.x && data.y) party.push(data);
 	else if (data.mode) mode = modes[data.mode];
 	if (data.unload) character.items.forEach( (e, index) => { if ( e && !e.name.includes("pot")) send_item(name,index,e.q);});
@@ -329,9 +340,10 @@ map_key("G","snippet", "pause();")
 
 function start_alts()
 {
-	start_character("GucciJesus", 2);
-	start_character("Healtuls", 3);
-	start_character("Saleth", 5);
+
+	if(character.name != "GucciJesus") start_character("GucciJesus", 2);
+	if(character.name != "Healtuls") start_character("Healtuls", 3);
+	if(character.name != "Saleth") start_character("Saleth", 5);
 	wait(5).then( e => char_list.forEach(e => send_party_invite(e)));
 }
 

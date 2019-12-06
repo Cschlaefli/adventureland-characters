@@ -1,11 +1,13 @@
 var nest_egg = 10000;
 
+party_leader = true;
+
 function merchant_mode()
 {
 	//some descison tree here at some point I guess;
 }
 
-var upgrade_to = 7;
+var upgrade_to = 6;
 
 async function try_compound(set)
 {
