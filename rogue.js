@@ -43,7 +43,8 @@ function attack_mode()
 		*/
 		//let x =get_nearest_hostile();
 		
-		target= get_nearest_monster({min_xp:100,max_att:400,type:hunting});
+		target= get_nearest_monster({type:"snowman"});
+		target= target || get_nearest_monster({min_xp:100,max_att:400,type:hunting});
 		if(target){
 			set_message("Targeted "+target.name);
 			change_target(target);
