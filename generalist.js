@@ -355,11 +355,13 @@ async function wait(x)
 	});
 }
 
+//returns the inventory as a list with their index and grade included
 function easy_inventory()
 {
 	return character.items.map( (item, index) => {
 			let out = {};
 			if(!item) return;
+			out.grade = item_grade(item);
 			if(item.name) out.name = item.name;
 			if(item.level) out.level = item.level;
 			if(item.q) out.q = item.q;
