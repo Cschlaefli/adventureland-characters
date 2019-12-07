@@ -304,7 +304,6 @@ function update_party()
 			else{ 
 				send_cm(member, {"location_request" : true})
 				last_cm = new Date();
-				log("requesting " + member)
 			}
 		}
 	});
