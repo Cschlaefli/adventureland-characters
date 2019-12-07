@@ -45,7 +45,6 @@ async function upgrade_all_items()
 {
 
 	let to_up = upgrade_count();
-
 	while(to_up.length > 0)
 	{
 		to_up = upgrade_count();
@@ -128,7 +127,7 @@ function compound_count()
 {
 	var inv = easy_inventory();
 	let comp_map = {}
-	inv.filter( e => e && G.items[e.name].compound)
+	inv.filter( e => G.items[e.name].compound)
 		.forEach( e => {
 			let k = e.name+e.level;
 			if(!comp_map[k]) comp_map[k] = []; 
