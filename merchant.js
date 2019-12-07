@@ -36,7 +36,7 @@ async function compound_all_items()
 	return;
 }
 
-async function upgrade_count()
+function upgrade_count()
 {
 	return  easy_inventory().filter( item => G.items[item.name].upgrade && (!item.level || item.level < upgrade_to));
 }
@@ -48,7 +48,7 @@ async function upgrade_all_items()
 	while(to_up.length > 0)
 	{
 		to_up = upgrade_count();
-		let sc_name = "scroll"+up_to[0].grade;
+		let sc_name = "scroll"+to_up[0].grade;
 		let scroll = locate_item(sc_name);
 		while(scroll < 0)
 		{
@@ -58,70 +58,11 @@ async function upgrade_all_items()
 			if(err == true) break;
 			scroll = locate_item(sc_name);
 		}
-		await wait(1);
-		await upgrade(to_up[0],scroll).catch( e => log(e));
-		log("upgraded " + up_to[0].name);
+		await upgrade(to_up[0].index,scroll).catch( e => log(e));
+		log("upgraded " + to_up[0].name);
 	}
 	
 }
-
-/*
-async function upgrade_all_items()
-{
-	let a = upgrade_count();
-	
-	while(a.diff > 0)
-	{
-		await buy("scroll0", a.diff);
-		a = get_upgrade_count();
-	}
-	//should have the scrolls here
-	log(a.upgrade_indexs.length)
-
-	for(x = 0; x < a.upgrade_indexs.length; x++)
-	{
-		let y = a.upgrade_indexs[x];
-		let item = character.items[y];
-		log("upgrading " + item.name);
-		while(item && item.level < upgrade_to)
-		{
-			try {
-				let result = await upgrade(y, a.scroll_index);
-				if(!result.success) {
-					log("failed");
-					break;
-				}
-			}catch (e) {
-				log(e.reason);
-				break;
-			}
-			item = character.items[y];
-		}
-	}
-	log("done");
-	return true;
-}
-function upgrade_count()
-{
-	let a = { scrolls : 0,
-        	scroll_index : -1,
-        	upgrade_count : 0,
-        	upgrade_indexs : []};
-
-	character.items.forEach( (item, index) =>{
-                if(item && item.name === "scroll0") { a.scrolls = item.q; a.scroll_index = index}
-                else if (item && item.name && G.items[item.name].upgrade){
-                        let diff = upgrade_to - item.level;
-                        if ( diff > 0){
-                                a.upgrade_count += diff;
-                                a.upgrade_indexs.push(index);
-                        }
-                }
-        });
-	a["diff"] = a.upgrade_count - a.scrolls;
-	return a;
-}*/
-
 
 function compound_count()
 {
