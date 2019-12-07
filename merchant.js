@@ -9,19 +9,6 @@ function merchant_mode()
 
 var upgrade_to = 6;
 
-async function try_compound(set)
-{
-	let grade = item_grade(curr[0]);
-	let scroll = locate_item("cscroll"+grade);
-	if(scroll < 0)
-	{
-		let buy_res = buy("cscroll"+grade).then( e => {
-			return compound(curr[0].index,curr[1].index,curr[2].index,scroll);
-		}).catch( e => {buy_err(e), reject();});
-		scroll = locate_item("cscroll"+grade);
-	}
-}
-
 async function compound_all_items()
 {
 	let comps = compound_count();
@@ -29,26 +16,57 @@ async function compound_all_items()
 	{
 		comps = compound_count()
 		let curr = comps[0];
-		let grade = item_grade(curr[0]);
-		let scroll = locate_item("cscroll"+grade);
+		let sc_name = "cscroll"+curr[0].grade;
+		let scroll = locate_item(sc_name);
 		while(scroll < 0)
 		{
 			let err = false;
-			await buy("cscroll"+grade)
+			await buy(sc_name)
 				.catch( e => {buy_err(e); err=true;});
 			if(err == true) break;
-			scroll = locate_item("cscroll"+grade);
+			scroll = locate_item(sc_name);
 		}
 		await wait(1);
 		if (character.q.compound) await wait( 1 + (character.q.compound.ms * .001))
 		compound(curr[0].index,curr[1].index,curr[2].index,scroll);
 		//await compound(curr[0].index,curr[1].index,curr[2].index,scroll).catch( e => log(e));
-		log("compounded "+ curr[0]);
+		log("compounded "+ curr[0].name);
 		
 	}
 	return;
 }
 
+async function upgrade_count()
+{
+	return  easy_inventory().filter( item => G.items[item.name].upgrade && (!item.level || item.level < upgrade_to));
+}
+
+async function upgrade_all_items()
+{
+
+	let to_up = upgrade_count();
+
+	while(to_up.length > 0)
+	{
+		to_up = upgrade_count();
+		let sc_name = "scroll"+up_to[0].grade;
+		let scroll = locate_item(sc_name);
+		while(scroll < 0)
+		{
+			let err = false;
+			await buy(sc_name)
+				.catch( e => {buy_err(e); err=true;});
+			if(err == true) break;
+			scroll = locate_item(sc_name);
+		}
+		await wait(1);
+		await upgrade(to_up[0],scroll).catch( e => log(e));
+		log("upgraded " + up_to[0].name);
+	}
+	
+}
+
+/*
 async function upgrade_all_items()
 {
 	let a = upgrade_count();
@@ -84,7 +102,6 @@ async function upgrade_all_items()
 	log("done");
 	return true;
 }
-
 function upgrade_count()
 {
 	let a = { scrolls : 0,
@@ -104,7 +121,8 @@ function upgrade_count()
         });
 	a["diff"] = a.upgrade_count - a.scrolls;
 	return a;
-}
+}*/
+
 
 function compound_count()
 {
