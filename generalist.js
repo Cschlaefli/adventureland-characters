@@ -256,7 +256,7 @@ setInterval(function(){
 },1000/10); // Loops every 1/4 seconds.
 
 var last_xp = character.xp
-const xp_interval = 60
+const xp_interval = 60 * 3
 
 setInterval( ()=> {
 	if(character.ctype === "merchant") return;

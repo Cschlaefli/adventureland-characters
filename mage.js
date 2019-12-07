@@ -1,5 +1,5 @@
 var hunting_ground = ""
-var hunting = "croc"
+var hunting = "porcupine"
 var mode = 1;
 var modes = {
         "idle" : 0,
