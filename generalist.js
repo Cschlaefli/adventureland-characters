@@ -367,7 +367,7 @@ function easy_inventory()
 			if(item.q) out.q = item.q;
 			out.index = index;
 			return out;
-		});
+	}).filter( e => e);
 }
 
 function equip_up()
