@@ -102,6 +102,7 @@ function kite_attack(target)
 	}*/
 	if(can_attack(target))
 	{
+		
 		attack(target);
 	}
 }

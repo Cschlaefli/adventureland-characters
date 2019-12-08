@@ -74,7 +74,7 @@ function follow(ch)
 		return;
 	}
 
-	follow_dist = character.range;
+	follow_dist = default_follow ||character.range*.25;
 	let dist = parent.distance(character,ch)
 	var x = ch.x - character.x;
 	var y = ch.y - character.y;
@@ -87,6 +87,8 @@ function follow(ch)
 		move(character.x+ (x/2), character.y + (y/2));
 	}
 }
+
+let default_follow = false
 
 function on_party_invite(name)
 {
@@ -219,7 +221,7 @@ setInterval(function(){
 	if (!party_leader){
 		if (mode != modes.buying)
 		{
-			follow(party.find(m => m.name === "GucciJesus"))
+			follow(party.find(m => m.name === "Saleth"))
 		}
 		else
 		{
@@ -269,6 +271,7 @@ setInterval( ()=> {
 }, 1000 * xp_interval);
 
 var last_cm = new Date();
+last_cm.setSeconds(last_cm.getSeconds - 10);
 
 function on_cm(name,data)
 {

@@ -6,7 +6,23 @@ var party_leader = true
 var targets = []
 
 var invis = false
+let kills = 0
+let wiffs = 0
+
 game.on("hit", function(data){
+	if(data.actor == "GucciJesus" && data.kill)
+	{
+		if(data.source == "mentalburst"){
+			log("lasthit :" + data.damage)
+			kills += 1;
+		}
+		else { 
+			log("killed by :" +data.source)
+			wiffs += 1;
+		}
+		log("Accuracy : " + (kills/(wiffs+kills)));
+
+	}
 	if(data.target === character.id || char_list.includes(data.actor) || data.actor === "Celery") return;
 	if(char_list.includes(data.target) && data.source == "attack"){
 		log(data.actor);
@@ -17,8 +33,10 @@ game.on("hit", function(data){
 function attack_mode()
 {
 	let active = get_active_characters();
+	/*
 	for( var x in active) { if(active[x] === "disconnected") start_alts(); }
 	if( Object.keys(get_active_characters()).length < 3) start_alts();
+	*/
 	modes.default = modes.attack;
 	var target=get_targeted_monster();
 	//targets.filter( e => e).sort( (a,b) => a.hp - b.hp);
@@ -85,14 +103,13 @@ let flip = 1;
 function kite_attack(target)
 {
 	if(!target) return;
-	flip *= -1;
 	let dist = parent.distance(target, character);
 	let diff = {'x':(target.x-character.x),'y':(target.y-character.y)}
 	let h = Math.atan2(diff.y, diff.x)// + Math.PI/2*flip;
 
 	if(dist > character.range)
 	{
-		let mv = min(10, dist/2);
+		let mv = max(7, dist/6);
 		move(
 			character.x+Math.cos(h)*mv,
 			character.y+Math.sin(h)*mv
@@ -103,25 +120,38 @@ function kite_attack(target)
 	else if(dist+5 < character.range)
 	{
 		let mv = character.range-dist+5;
+		flip *= -1;
+		let zig = Math.PI/4 * flip;
 		move(
-			character.x-Math.cos(h)*mv,
-			character.y-Math.sin(h)*mv
+			character.x-Math.cos(h+zig)*mv,
+			character.y-Math.sin(h+zig)*mv
 		);
 	}
 	if(can_attack(target))
 	{
-		
-		if(character.hp > 2000)
+		if(target.mtype == "snowman")
 		{
-			invis = invis || quickskill("invis");
+			attack(target);
+			return;
 		}
+		if(!character.s.invis)
+		{
+			quickskill("invis");
+			return;
+
+		}else if(target.hp < 500)
+		{
+			if(target.hp < 300) quickskill("mentalburst");
+			else quickskill("quickpunch", target);
+			return;
+		}
+
 		if(mssince(last_use.attack) > 200)
 		{
 			attack(target).then(
 				e =>last_use.attack = new Date()
 			);
-			invis = false
-		}else if(invis && G.skills.quickpunch.mp < character.mp)
+		}else if(G.skills.quickpunch.mp < character.mp)
 		{
 			quickskill("quickpunch", target);
 		}
