@@ -80,24 +80,29 @@ function attack_mode()
 	*/
 }
 
+let flip = 1;
 
 function kite_attack(target)
 {
 	if(!target) return;
+	flip *= -1;
 	let dist = parent.distance(target, character);
 	let diff = {'x':(target.x-character.x),'y':(target.y-character.y)}
-	let h = Math.atan2(diff.y, diff.x);
+	let h = Math.atan2(diff.y, diff.x)// + Math.PI/2*flip;
 
 	if(dist > character.range)
 	{
+		let mv = min(10, dist/2);
 		move(
-			character.x+(target.x-character.x)/10,
-			character.y+(target.y-character.y)/10
+			character.x+Math.cos(h)*mv,
+			character.y+Math.sin(h)*mv
+			//character.x+(target.x-character.x)/5,
+			//character.y+(target.y-character.y)/5
 		);
 	}
-	else if(dist < character.range)
+	else if(dist+5 < character.range)
 	{
-		let mv = character.range-dist-1;
+		let mv = character.range-dist+5;
 		move(
 			character.x-Math.cos(h)*mv,
 			character.y-Math.sin(h)*mv
@@ -105,10 +110,21 @@ function kite_attack(target)
 	}
 	if(can_attack(target))
 	{
-
-		quickskill("quickpunch", target)
-		invis = invis || quickskill("invis")
-		attack(target);
+		
+		if(character.hp > 2000)
+		{
+			invis = invis || quickskill("invis");
+		}
+		if(mssince(last_use.attack) > 200)
+		{
+			attack(target).then(
+				e =>last_use.attack = new Date()
+			);
+			invis = false
+		}else if(invis && G.skills.quickpunch.mp < character.mp)
+		{
+			quickskill("quickpunch", target);
+		}
 	}
 }
 

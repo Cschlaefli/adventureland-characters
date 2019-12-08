@@ -46,18 +46,25 @@ function support_mode()
 			use("curse", mon);
 		}
 	}
+	let snowman = get_nearest_monster({mtype:"snowman"});
+	if(can_attack(snowman)) attack(snowman);
 }
 
 function avoid_monsters()
 {
 	let m = get_nearest_monster();
-	if(m && parent.distance(m, character) < 50)
+	if(!m) return;
+	let dist = parent.distance(target, character);
+	let diff = {'x':(target.x-character.x),'y':(target.y-character.y)}
+	
+	let h = Math.atan2(diff.y, diff.x) + Math.PI/2;
+
+	if(dist < 50)
 	{ 
-		let x = m.x - character.x;
-		let y = m.y -character.y;
+		let sp = 10;
 		move( 
-			character.x - x,
-			character.y - y
+			character.x - Math.cos(h)*sp,
+			character.y - Math.sin(h)*sp
 		);
 	}
 }

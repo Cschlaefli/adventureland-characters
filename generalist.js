@@ -20,7 +20,8 @@ var cooldowns = {
 var last_use = {
 	"invis" : new Date(),
 	"quickpunch" : new Date(),
-	"quickstab" : new Date()
+	"quickstab" : new Date(),
+	"attack" : new Date()
 }
 
 var locations = {
@@ -163,7 +164,7 @@ function buy_up()
 		mode = modes.default;
 		return;
 	}
-	if (_mp > 0) buy("mpot0", _mp).then(
+	if (_mp > 0) buy("mpot1", _mp).then(
 		value => { last_buy = new Date();},
 		reason => { buy_check(reason.reason)}
 	);
@@ -182,7 +183,7 @@ function update_pot_count()
 		.forEach(function(item) {
 		if (!item) return;
 		if (item.name == "hpot1") hp_count += item.q;
-		if (item.name == "mpot0") mp_count += item.q;
+		if (item.name == "mpot1") mp_count += item.q;
 	});
 }
 
