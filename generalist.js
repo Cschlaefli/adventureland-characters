@@ -204,8 +204,8 @@ function hp_mp(hp_cap, mp_cap){
 	if(safeties && mssince(last_potion)<min(200,character.ping*3)) return;
 	var used=false;
 	if(new Date()<parent.next_skill.use_hp) return;
-	if(character.mp/character.max_mp<mp_cap) use('use_mp'),used=true,mp_used+=1;
-	else if(character.hp/character.max_hp<hp_cap) use('use_hp'),used=true,hp_used+=1;
+	if(character.hp/character.max_hp<hp_cap) use('use_hp'),used=true,hp_used+=1;
+	else if(character.mp/character.max_mp<mp_cap) use('use_mp'),used=true,mp_used+=1;
 	if(used) last_potion=new Date();
 }
 
@@ -362,12 +362,9 @@ async function wait(x)
 function easy_inventory()
 {
 	return character.items.map( (item, index) => {
-			let out = {};
 			if(!item) return;
+			let out = {...item};
 			out.grade = item_grade(item);
-			if(item.name) out.name = item.name;
-			if(item.level) out.level = item.level;
-			if(item.q) out.q = item.q;
 			out.index = index;
 			return out;
 	}).filter( e => e);

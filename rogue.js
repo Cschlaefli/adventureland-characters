@@ -1,6 +1,6 @@
 var mode = 1
 var hunting_ground = "";
-var hunting = "arcticbee";
+var hunting = "bat";
 
 var party_leader = true
 var targets = []
@@ -8,18 +8,19 @@ var targets = []
 var invis = false
 let kills = 0
 let wiffs = 0
+let codestart = new Date();
 
 game.on("hit", function(data){
 	if(data.actor == "GucciJesus" && data.kill)
 	{
 		if(data.source == "mentalburst"){
-			log("lasthit :" + data.damage)
 			kills += 1;
 		}
 		else { 
-			log("killed by :" +data.source)
 			wiffs += 1;
 		}
+		let kps = (wiffs+kills)/(mssince(codestart)*.001)	
+		log("Kills Per min : " + (kps*60).toFixed(2));
 		log("Accuracy : " + (kills/(wiffs+kills)));
 
 	}
@@ -32,16 +33,18 @@ game.on("hit", function(data){
 
 function attack_mode()
 {
+	if(!character.s.rspeed) use("rspeed", character);
+
 	let active = get_active_characters();
-	/*
 	for( var x in active) { if(active[x] === "disconnected") start_alts(); }
 	if( Object.keys(get_active_characters()).length < 3) start_alts();
-	*/
 	modes.default = modes.attack;
 	var target=get_targeted_monster();
+	if(target && character.targets == 0 && target.hp >= target.max_hp) target = null;
 	//targets.filter( e => e).sort( (a,b) => a.hp - b.hp);
 	
-	hp_mp(0.3 , 0.5);
+	hp_mp(0.6 , 0.5);
+	if(target && target.target && !char_list.includes(target.target) ) target = null;
 	
 	if(!target)
 	{
@@ -109,7 +112,7 @@ function kite_attack(target)
 
 	if(dist > character.range)
 	{
-		let mv = max(7, dist/6);
+		let mv = max(10, dist/6);
 		move(
 			character.x+Math.cos(h)*mv,
 			character.y+Math.sin(h)*mv
@@ -120,7 +123,7 @@ function kite_attack(target)
 	else if(dist+5 < character.range)
 	{
 		let mv = character.range-dist+5;
-		flip *= -1;
+		if(Math.random() > .5) flip *= -1;
 		let zig = Math.PI/4 * flip;
 		move(
 			character.x-Math.cos(h+zig)*mv,
@@ -134,26 +137,35 @@ function kite_attack(target)
 			attack(target);
 			return;
 		}
+
+		if(character.hp < 700 && target.dreturn) return;
+
 		if(!character.s.invis)
 		{
 			quickskill("invis");
-			return;
 
-		}else if(target.hp < 500)
+		}
+
+		if(target.hp < 500)
 		{
 			if(target.hp < 300) quickskill("mentalburst");
 			else quickskill("quickpunch", target);
 			return;
 		}
 
-		if(mssince(last_use.attack) > 200)
+		if( mssince(last_use.attack) > 200)
 		{
 			attack(target).then(
 				e =>last_use.attack = new Date()
 			);
-		}else if(G.skills.quickpunch.mp < character.mp)
+		}
+		if(G.skills.quickpunch.mp < character.mp)
 		{
 			quickskill("quickpunch", target);
+		}
+		if(G.skills.mentalburst.mp < character.mp)
+		{
+			if(target.hp < 300) quickskill("mentalburst");
 		}
 	}
 }
