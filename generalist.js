@@ -40,7 +40,7 @@ var char_list = ["Healtuls", "GucciJesus", "Saleth", "GucciGalore"]
 
 
 var min_pots = 25;
-var buy_to = 10000;
+var buy_to = 9999;
 
 var invis = false
 

@@ -131,4 +131,3 @@ function gather_junk()
         char_list.filter(m => m !== character.id)
                 .forEach(m => send_cm(m, {"unload" : true}));
 }
-

@@ -1,6 +1,6 @@
 var mode = 1
 var hunting_ground = "";
-var hunting = "bat";
+var hunting = "croc";
 
 var party_leader = true
 var targets = []
@@ -103,6 +103,8 @@ function attack_mode()
 
 let flip = 1;
 
+setInterval(function() {flip*=-1;},2*1000); // Check every minute
+
 function kite_attack(target)
 {
 	if(!target) return;
@@ -123,7 +125,7 @@ function kite_attack(target)
 	else if(dist+5 < character.range)
 	{
 		let mv = character.range-dist+5;
-		if(Math.random() > .5) flip *= -1;
+		//if(Math.random() > .5) flip *= -1;
 		let zig = Math.PI/4 * flip;
 		move(
 			character.x-Math.cos(h+zig)*mv,
