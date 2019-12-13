@@ -1,6 +1,6 @@
 var mode = 1
 var hunting_ground = "";
-var hunting = "croc";
+var hunting = "arcticbee";
 
 var party_leader = true
 var targets = []
